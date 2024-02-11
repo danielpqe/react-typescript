@@ -1,19 +1,14 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { RandoFox } from "@/components/RandomFox";
+import { LazyImage } from "@/components/RandomFox";
 import { MouseEventHandler, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 const random: () => number = () => Math.floor(Math.random() * 123) + 1;
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
-type ImageItem = {
-  id: string;
-  url: string;
-};
-
 export default function Home() {
-  const [images, setImages] = useState<Array<ImageItem>>([
+  const [images, setImages] = useState<Array<IImageItem>>([
     // { id: generateId(), url: `https://randomfox.ca/images/${random()}.jpg` },
     // { id: generateId(), url: `https://randomfox.ca/images/${random()}.jpg` },
     // { id: generateId(), url: `https://randomfox.ca/images/${random()}.jpg` },
@@ -23,7 +18,7 @@ export default function Home() {
   const addNewFox: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
     const target = event.target;
-    console.log("target", target);
+    // console.log("target", target);
 
     setImages([
       ...images,
@@ -39,7 +34,13 @@ export default function Home() {
       {images.map(({ id, url }) => {
         return (
           <div className="p-4" key={id}>
-            <RandoFox image={url} alt="" />
+            <LazyImage
+              src={url}
+              alt=""
+              width="250"
+              height={250}
+              className="rounded-md bg-gray-300"
+            />
           </div>
         );
       })}

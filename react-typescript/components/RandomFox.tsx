@@ -1,39 +1,40 @@
-import { MutableRefObject, Ref, useRef, useEffect, use } from "react";
+import {
+  MutableRefObject,
+  Ref,
+  useRef,
+  useEffect,
+  useState,
+  ImgHTMLAttributes,
+} from "react";
 import Image from "next/image";
 import { log } from "console";
 
-type Props = {
-  image: string;
-  alt: string;
-};
-
-export const RandoFox = ({ image, alt }: Props): JSX.Element => {
+export const LazyImage = ({ src, ...impProps }: Props): JSX.Element => {
   const node = useRef<HTMLImageElement>(null);
-
+  const [currentSrc, setCurrentSrc] = useState(
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4="
+  );
   useEffect(() => {
     // Nuevo observador
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          console.log("Hi");
+          setCurrentSrc(src);
         }
       });
     });
     //onIntersection
 
+    if (node.current) {
+      observer.observe(node.current as HTMLImageElement);
+    }
     //observe node
-    observer.observe(node.current as HTMLImageElement);
-    // desconectar
-  }, []);
 
-  return (
-    <Image
-      ref={node}
-      className="rounded-md"
-      src={image}
-      alt={alt}
-      width="250"
-      height={250}
-    />
-  );
+    return () => {
+      observer.disconnect;
+    };
+    // desconectar
+  }, [src]);
+
+  return <img ref={node} src={currentSrc} {...impProps} />;
 };
